@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena Sains Kelas 3 - Wujud Benda</title>
+    <meta name="description" content="Game belajar interaktif IPA Kelas 3 tentang wujud benda dan perubahannya. Pilih penjelajahmu dan taklukkan semua monster soal!">
+    <!-- Favicon Emoji -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
+
+    <style>
+        /* --- CSS RESET & DEFAULTS --- */
+        :root {
+            --blue: #3A7AFE;
+            --orange: #FFB020;
+            --green: #2EC27E;
+            --red: #F94C66;
+            --purple: #6E59A5;
+            --dark: #333;
+            --light: #fff;
+            --bg-soft: #f4f7fc;
+            --border-color: #e0e6f1;
+            
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            --radius-md: 0.75rem;
+            --radius-lg: 1.5rem; /* Dibuat lebih bulat */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --transition-speed: 200ms;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-soft);
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* --- UTILITIES & ACCESSIBILITY --- */
+        .hidden { display: none !important; }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        :focus-visible {
+            outline: 3px solid var(--blue);
+            outline-offset: 3px;
+            border-radius: var(--radius-md);
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3 { font-weight: 700; }
+        h1 { font-size: 1.8rem; }
+        h2 { font-size: 1.5rem; color: var(--purple); }
+        h3 { font-size: 1.2rem; }
+        
+        /* --- BUTTON STYLES --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px; /* Tombol lebih membulat */
+            border: 2px solid transparent;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-decoration: none;
+            min-height: 48px;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-primary { background-color: var(--blue); color: var(--light); }
+        .btn-primary:hover { background-color: #2166ea; transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .btn-secondary { background-color: var(--light); color: var(--dark); border-color: var(--border-color); }
+        .btn-secondary:hover { background-color: #f8f9fa; }
+        .btn-hint { background-color: var(--orange); color: var(--light); }
+        .btn-hint:hover { background-color: #e69e1c; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.9rem; }
+
+        /* --- MAIN LAYOUT --- */
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            flex-grow: 1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--light);
+            box-shadow: var(--shadow-sm);
+            border-radius: 50px;
+            margin-bottom: 1rem;
+        }
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--purple);
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "progress"
+                "challenge"
+                "feedback";
+            gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            main {
+                grid-template-columns: 320px 1fr;
+                grid-template-areas:
+                    "progress challenge"
+                    "progress feedback";
+                gap: 2rem;
+            }
+        }
+
+        /* --- CARD COMPONENT --- */
+        .card {
+            background-color: var(--light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            transition: transform var(--transition-speed) ease;
+        }
+
+        /* --- PROGRESS PANEL --- */
+        #progress-panel { grid-area: progress; }
+        .player-info { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .player-avatar { font-size: 3.5rem; }
+        .player-stats { display: flex; align-items: center; gap: 1rem; font-weight: 600; font-size: 1.1rem; }
+        .stat-item { display: flex; align-items: center; gap: 0.3rem; }
+        .xp-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        .xp-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--green), #86e3b5);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        .level-list .level-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            margin-block: 0.5rem;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-color);
+            transition: all var(--transition-speed) ease;
+            cursor: default;
+        }
+        .level-list .level-item.active { background-color: #e7f1ff; border-color: var(--blue); font-weight: bold; }
+        .level-list .level-item.completed { background-color: #eaf8f1; border-color: var(--green); opacity: 0.8; }
+        .level-icon { margin-right: 0.8rem; font-size: 1.2rem; }
+        .level-stars { margin-left: auto; color: var(--orange); }
+
+        /* --- CHALLENGE CARD --- */
+        #challenge-card { grid-area: challenge; text-align: center; }
+        .question-display {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .question-emoji {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .answer-options .btn {
+            width: 100%;
+            justify-content: flex-start;
+            background-color: #f8f9fa;
+        }
+        .answer-options .btn:hover {
+            background-color: #e9ecef;
+            border-color: var(--blue);
+        }
+        .answer-input-short {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.8rem;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+
+        .action-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        
+        /* --- FEEDBACK PANEL --- */
+        #feedback-panel { 
+            grid-area: feedback; 
+            min-height: 120px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feedback-content {
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            animation: fadeIn 0.5s ease;
+            width: 100%;
+        }
+        .feedback-correct { background-color: #eaf8f1; color: #1e8555; border: 2px solid var(--green); }
+        .feedback-incorrect { background-color: #fdebee; color: #c9344c; border: 2px solid var(--red); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- MODAL DIALOG --- */
+        dialog {
+            border: none;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+        }
+        dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+        }
+        dialog .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        dialog .close-modal {
+            background: none; border: none; font-size: 2rem; cursor: pointer; color: #888;
+        }
+
+        /* --- ONBOARDING MODAL --- */
+        #onboarding-modal h2 { text-align: center; }
+        .champion-selection {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+        }
+        .champion-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid transparent;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+        .champion-card:hover, .champion-card.selected {
+            background-color: #e7f1ff;
+            border-color: var(--blue);
+            transform: scale(1.05);
+        }
+        .champion-avatar { font-size: 4rem; }
+        .champion-name { font-weight: 600; margin-top: 0.5rem; }
+        
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1 class="header-title">🔬 Arena Sains Kelas 3</h1>
+            <div class="header-actions">
+                <button id="help-btn" class="btn btn-secondary btn-sm">💡 Bantuan</button>
+                <button id="reset-btn" class="btn btn-secondary btn-sm">🔄 Reset</button>
+                <button id="teacher-btn" class="btn btn-secondary btn-sm">👩‍🏫 Lembar Guru</button>
+            </div>
+        </header>
+
+        <main id="main-content" class="hidden">
+            <!-- Panel Progres Pemain -->
+            <aside id="progress-panel" class="card">
+                <div class="player-info">
+                    <span id="player-avatar" class="player-avatar">🧑‍🔬</span>
+                    <div>
+                        <h3 id="player-name">Penjelajah Sains</h3>
+                        <div class="player-stats">
+                            <span class="stat-item" aria-label="Nyawa">❤️ <span id="player-lives">3</span></span>
+                            <span class="stat-item" aria-label="Kristal Energi">💎 <span id="player-coins">0</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span>Level <span id="player-level">1</span></span>
+                    <div class="xp-bar-container">
+                        <div id="xp-bar" class="xp-bar"></div>
+                    </div>
+                    <small>XP: <span id="player-xp">0</span> / <span id="xp-to-next-level">100</span></small>
+                </div>
+                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border-color);">
+                <ul id="level-list" class="level-list">
+                    <!-- Level items will be generated by JS -->
+                </ul>
+            </aside>
+
+            <!-- Kartu Tantangan (Soal) -->
+            <section id="challenge-card" class="card">
+                <h2 id="challenge-title">Tantangan Dimulai!</h2>
+                <div id="question-area">
+                    <div id="question-display" class="question-display">
+                        <!-- Question will be rendered here -->
+                    </div>
+                    <form id="answer-form" onsubmit="event.preventDefault(); Game.checkAnswer();">
+                        <div id="answer-input-area">
+                            <!-- Answer inputs will be rendered here -->
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" id="check-answer-btn" class="btn btn-primary">Cek Jawaban</button>
+                            <button type="button" id="hint-btn" class="btn btn-hint">Petunjuk (-5💎)</button>
+                            <button type="button" id="fact-btn" class="btn btn-secondary">Fakta Keren (-8💎)</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="boss-fight-area" class="hidden">
+                    <h2>👹 LAWAN MONSTER SOAL! 👹</h2>
+                    <p id="boss-intro">Kalahkan 5 soal beruntun untuk naik ke level berikutnya!</p>
+                    <p>Soal ke: <span id="boss-q-current">1</span> dari <span id="boss-q-total">5</span></p>
+                    <button id="start-boss-btn" class="btn btn-primary">Mulai Lawan Monster!</button>
+                </div>
+            </section>
+
+            <!-- Panel Umpan Balik -->
+            <section id="feedback-panel" class="card">
+                <div id="feedback-container" aria-live="polite">
+                    <p>Pilih jawabanmu dan tekan "Cek Jawaban"!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Onboarding -->
+    <dialog id="onboarding-modal">
+        <div class="modal-header">
+            <h2>Selamat Datang di Arena Sains!</h2>
+        </div>
+        <p>Siap menjadi penjelajah hebat? Pertama, pilih karaktermu!</p>
+        <div id="champion-selection" class="champion-selection">
+            <div class="champion-card" data-champion="🧑‍🔬" tabindex="0" role="button" aria-label="Pilih Ahli Kimia">
+                <span class="champion-avatar">🧑‍🔬</span>
+                <span class="champion-name">Ahli Kimia</span>
+            </div>
+            <div class="champion-card" data-champion="🔭" tabindex="0" role="button" aria-label="Pilih Astronom">
+                <span class="champion-avatar">🔭</span>
+                <span class="champion-name">Astronom</span>
+            </div>
+            <div class="champion-card" data-champion="🌱" tabindex="0" role="button" aria-label="Pilih Ahli Botani">
+                <span class="champion-avatar">🌱</span>
+                <span class="champion-name">Ahli Botani</span>
+            </div>
+        </div>
+        <h3>Cara Bermain:</h3>
+        <ol>
+            <li>Jawab soal tentang wujud benda di setiap level.</li>
+            <li>Kumpulkan XP untuk naik level dan kristal 💎 untuk membeli bantuan.</li>
+            <li>Kalahkan "Monster Soal" di akhir setiap level untuk lanjut!</li>
+        </ol>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <button id="start-game-btn" class="btn btn-primary" disabled>Mulai Bertualang!</button>
+        </div>
+    </dialog>
+    
+    <!-- Modal Bantuan -->
+    <dialog id="help-modal">
+        <div class="modal-header">
+            <h2>💡 Bantuan Wujud Benda</h2>
+            <button class="close-modal" aria-label="Tutup">&times;</button>
+        </div>
+        <div id="help-content">
+            <!-- Bantuan akan di-generate oleh JS -->
+        </div>
+    </dialog>
+
+    <!-- Modal Lembar Guru -->
+    <dialog id="teachers-sheet-modal">
+        <div class="modal-header">
+            <h2>👩‍🏫 Ringkasan Capaian Siswa</h2>
+            <button class="close-modal" aria-label="Tutup">&times;</button>
+        </div>
+        <div id="teachers-sheet-content">
+            <pre id="recap-json" style="background: #eee; padding: 1rem; border-radius: 8px; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto;"></pre>
+            <br>
+            <button id="download-recap-btn" class="btn btn-secondary">Unduh Rekap (JSON)</button>
+        </div>
+    </dialog>
+
+    <footer>
+        <p>Arena Sains v1.0.0 | Dibuat dengan ❤️ untuk pendidikan Indonesia.</p>
+    </footer>
+
+    <script>
+    // --- IIFE (Immediately Invoked Function Expression) untuk membungkus logika game ---
+    (function() {
+        'use strict';
+
+        // --- KONSTANTA & BANK SOAL ---
+        const QUESTION_BANK = [
+            // Level 1: Benda Padat
+            { level: 1, type: 'mc', q: 'Manakah di bawah ini yang merupakan benda padat?', emoji: '🤔', options: ['Susu 🥛', 'Batu 🪨', 'Asap 💨'], a: 'Batu 🪨' },
+            { level: 1, type: 'mc', q: 'Bentuk benda padat jika dipindahkan akan...', emoji: '📦', options: ['Berubah-ubah', 'Tetap', 'Menjadi lebih kecil'], a: 'Tetap' },
+            { level: 1, type: 'mc', q: 'Contoh benda padat adalah...', emoji: '✏️', options: ['Air', 'Udara', 'Meja'], a: 'Meja' },
+            { level: 1, type: 'fill', q: 'Pensil adalah contoh benda...', emoji: '✏️', a: ['padat'] },
+            { level: 1, type: 'mc', q: 'Benda padat memiliki bentuk yang...', emoji: '🧱', options: ['Mengikuti wadahnya', 'Tidak terlihat', 'Pasti dan tidak berubah'], a: 'Pasti dan tidak berubah' },
+            
+            // Level 2: Benda Cair
+            { level: 2, type: 'mc', q: 'Air yang dimasukkan ke dalam gelas akan berbentuk seperti...', emoji: '💧', options: ['Botol', 'Gelas', 'Kotak'], a: 'Gelas' },
+            { level: 2, type: 'mc', q: 'Manakah yang termasuk benda cair?', emoji: '🤔', options: ['Buku 📖', 'Kecap 🍶', 'Angin 🌬️'], a: 'Kecap 🍶' },
+            { level: 2, type: 'fill', q: 'Sirup adalah contoh benda...', emoji: '🥤', a: ['cair'] },
+            { level: 2, type: 'mc', q: 'Sifat benda cair adalah...', emoji: '🌊', options: ['Bentuknya tetap', 'Mengalir dari tempat tinggi ke rendah', 'Tidak bisa dilihat'], a: 'Mengalir dari tempat tinggi ke rendah' },
+            { level: 2, type: 'mc', q: 'Minyak goreng termasuk wujud benda...', emoji: '🍳', options: ['Padat', 'Cair', 'Gas'], a: 'Cair' },
+            
+            // Level 3: Benda Gas
+            { level: 3, type: 'mc', q: 'Udara yang kita hirup adalah contoh benda...', emoji: '😮‍💨', options: ['Padat', 'Cair', 'Gas'], a: 'Gas' },
+            { level: 3, type: 'mc', q: 'Balon bisa mengembang karena diisi dengan...', emoji: '🎈', options: ['Air', 'Pasir', 'Udara'], a: 'Udara' },
+            { level: 3, type: 'fill', q: 'Asap dari kendaraan adalah contoh benda...', emoji: '💨', a: ['gas'] },
+            { level: 3, type: 'mc', q: 'Sifat benda gas adalah...', emoji: '☁️', options: ['Bentuknya selalu kotak', 'Memenuhi seluruh ruangan', 'Hanya ada di tempat dingin'], a: 'Memenuhi seluruh ruangan' },
+            { level: 3, type: 'mc', q: 'Manakah yang merupakan benda gas?', emoji: '🤔', options: ['Uap air ♨️', 'Es batu 🧊', 'Jus jeruk 🧃'], a: 'Uap air ♨️' },
+
+            // Level 4: Perubahan Wujud 1 (Mencair & Membeku)
+            { level: 4, type: 'mc', q: 'Es krim yang dibiarkan di tempat panas akan...', emoji: '🍦', options: ['Membeku', 'Mencair', 'Menguap'], a: 'Mencair' },
+            { level: 4, type: 'fill', q: 'Perubahan dari benda padat menjadi cair disebut...', emoji: '🧊➡️💧', a: ['mencair', 'meleleh'] },
+            { level: 4, type: 'mc', q: 'Air yang dimasukkan ke dalam freezer akan...', emoji: '💧➡️🧊', options: ['Menguap', 'Mencair', 'Membeku'], a: 'Membeku' },
+            { level: 4, type: 'fill', q: 'Perubahan dari benda cair menjadi padat disebut...', emoji: '💧➡️🧊', a: ['membeku'] },
+            { level: 4, type: 'mc', q: 'Lilin yang menyala akan meleleh. Ini adalah contoh proses...', emoji: '🕯️', options: ['Membeku', 'Mengembun', 'Mencair'], a: 'Mencair' },
+
+            // Level 5: Perubahan Wujud 2 (Menguap & Mengembun)
+            { level: 5, type: 'mc', q: 'Saat Ibu merebus air, air akan berubah menjadi...', emoji: '냄', options: ['Es', 'Uap air', 'Pasir'], a: 'Uap air' },
+            { level: 5, type: 'fill', q: 'Perubahan dari benda cair menjadi gas disebut...', emoji: '💧➡️💨', a: ['menguap'] },
+            { level: 5, type: 'mc', q: 'Titik-titik air di daun pada pagi hari disebut...', emoji: '🌿', options: ['Hujan', 'Embun', 'Salju'], a: 'Embun' },
+            { level: 5, type: 'fill', q: 'Perubahan dari benda gas menjadi cair disebut...', emoji: '💨➡️💧', a: ['mengembun'] },
+            { level: 5, type: 'mc', q: 'Baju basah yang dijemur menjadi kering karena airnya...', emoji: '👕', options: ['Membeku', 'Menguap', 'Mencair'], a: 'Menguap' },
+        ];
+        
+        const LEVELS = [
+            { id: 1, name: "Mengenal Benda Padat", icon: "🧱" },
+            { id: 2, name: "Mengenal Benda Cair", icon: "💧" },
+            { id: 3, name: "Mengenal Benda Gas", icon: "💨" },
+            { id: 4, name: "Mencair & Membeku", icon: "🧊" },
+            { id: 5, name: "Menguap & Mengembun", icon: "☁️" },
+        ];
+        const XP_PER_LEVEL = 100;
+        const BOSS_FIGHT_QUESTIONS = 5;
+
+        // --- STATE GAME ---
+        let state = {
+            profile: {
+                champion: '🧑‍🔬',
+                name: 'Penjelajah Cilik',
+            },
+            progress: {
+                level: 1,
+                xp: 0,
+                coins: 10,
+                lives: 3,
+                combo: 0,
+                levelMastery: {}, // { 1: stars, 2: stars, ... }
+            },
+            currentQuestion: null,
+            inBossFight: false,
+            bossQuestionCount: 0,
+            consecutiveErrors: 0,
+        };
+
+        // --- ELEMEN DOM ---
+        const dom = {
+            mainContent: document.getElementById('main-content'),
+            onboardingModal: document.getElementById('onboarding-modal'),
+            helpModal: document.getElementById('help-modal'),
+            teachersSheetModal: document.getElementById('teachers-sheet-modal'),
+            championSelection: document.getElementById('champion-selection'),
+            startGameBtn: document.getElementById('start-game-btn'),
+            playerAvatar: document.getElementById('player-avatar'),
+            playerLives: document.getElementById('player-lives'),
+            playerCoins: document.getElementById('player-coins'),
+            playerLevel: document.getElementById('player-level'),
+            playerXp: document.getElementById('player-xp'),
+            xpToNextLevel: document.getElementById('xp-to-next-level'),
+            xpBar: document.getElementById('xp-bar'),
+            levelList: document.getElementById('level-list'),
+            challengeTitle: document.getElementById('challenge-title'),
+            questionArea: document.getElementById('question-area'),
+            questionDisplay: document.getElementById('question-display'),
+            answerForm: document.getElementById('answer-form'),
+            answerInputArea: document.getElementById('answer-input-area'),
+            feedbackContainer: document.getElementById('feedback-container'),
+            bossFightArea: document.getElementById('boss-fight-area'),
+            startBossBtn: document.getElementById('start-boss-btn'),
+        };
+
+        // --- LOGIKA UTAMA GAME ---
+        const Game = {
+            init() {
+                Game.loadState();
+                Game.bindEvents();
+                if (!state.progress.level) { // Pengguna baru
+                    dom.onboardingModal.showModal();
+                } else {
+                    dom.mainContent.classList.remove('hidden');
+                    Game.renderAll();
+                    Game.nextQuestion();
+                }
+            },
+
+            bindEvents() {
+                // Onboarding
+                dom.championSelection.addEventListener('click', (e) => {
+                    const card = e.target.closest('.champion-card');
+                    if (card) {
+                        document.querySelectorAll('.champion-card').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        state.profile.champion = card.dataset.champion;
+                        dom.startGameBtn.disabled = false;
+                    }
+                });
+                dom.startGameBtn.addEventListener('click', Game.startGame);
+
+                // Tombol Header
+                document.getElementById('help-btn').addEventListener('click', Game.showHelp);
+                document.getElementById('reset-btn').addEventListener('click', Game.resetProgress);
+                document.getElementById('teacher-btn').addEventListener('click', Game.showTeachersSheet);
+                
+                // Tutup modal
+                document.querySelectorAll('.close-modal').forEach(btn => {
+                    btn.addEventListener('click', () => btn.closest('dialog').close());
+                });
+                
+                // Aksi Game
+                dom.answerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    Game.checkAnswer();
+                });
+                document.getElementById('hint-btn').addEventListener('click', () => Game.giveHint(false));
+                document.getElementById('fact-btn').addEventListener('click', Game.showFact);
+                dom.startBossBtn.addEventListener('click', Game.startBossFight);
+            },
+            
+            startGame() {
+                state.progress.level = 1;
+                dom.onboardingModal.close();
+                dom.mainContent.classList.remove('hidden');
+                Game.renderAll();
+                Game.nextQuestion();
+                Game.saveState();
+            },
+            
+            nextQuestion() {
+                // Cek kondisi lawan monster
+                if (state.progress.xp >= XP_PER_LEVEL && !state.inBossFight && !state.progress.levelMastery[state.progress.level]) {
+                    Game.initiateBossFight();
+                    return;
+                }
+
+                dom.answerForm.reset();
+                dom.feedbackContainer.innerHTML = `<p>Jawab soal berikut untuk mendapatkan XP!</p>`;
+                dom.feedbackContainer.className = '';
+
+                let availableQuestions = QUESTION_BANK.filter(q => q.level === state.progress.level);
+                const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+                state.currentQuestion = availableQuestions[randomIndex];
+                
+                Game.renderQuestion();
+            },
+
+            checkAnswer() {
+                const q = state.currentQuestion;
+                let userAnswer;
+                
+                if (q.type === 'mc') {
+                    const selectedOption = dom.answerInputArea.querySelector('button.selected');
+                    if (!selectedOption) {
+                        alert("Pilih salah satu jawaban dulu ya!");
+                        return;
+                    }
+                    userAnswer = selectedOption.textContent;
+                } else if (q.type === 'fill') {
+                    userAnswer = dom.answerInputArea.querySelector('input').value.trim().toLowerCase();
+                }
+
+                let isCorrect = false;
+                if (q.type === 'mc') {
+                    isCorrect = (userAnswer === q.a);
+                } else if (q.type === 'fill') {
+                    isCorrect = q.a.includes(userAnswer);
+                }
+
+                if (isCorrect) {
+                    Game.handleCorrectAnswer();
+                } else {
+                    Game.handleIncorrectAnswer();
+                }
+            },
+
+            handleCorrectAnswer() {
+                const xpGain = 15 + state.progress.combo * 2;
+                const coinGain = 3;
+                state.progress.xp += xpGain;
+                state.progress.coins += coinGain;
+                state.progress.combo++;
+                state.consecutiveErrors = 0;
+
+                let feedbackHtml = `
+                    <div class="feedback-content feedback-correct">
+                        <h3>🎉 Hebat, Jawabanmu Benar!</h3>
+                        <p>Kamu dapat ${xpGain} XP dan ${coinGain} Kristal 💎. Kombo ${state.progress.combo}x!</p>
+                    </div>`;
+                dom.feedbackContainer.innerHTML = feedbackHtml;
+
+                if (state.inBossFight) {
+                    state.bossQuestionCount++;
+                    document.getElementById('boss-q-current').textContent = state.bossQuestionCount + 1;
+                    if (state.bossQuestionCount >= BOSS_FIGHT_QUESTIONS) {
+                        Game.endBossFight(true);
+                    } else {
+                        setTimeout(Game.nextQuestion, 2000);
+                    }
+                } else {
+                    setTimeout(Game.nextQuestion, 2000);
+                }
+
+                Game.updateProgressUI();
+                Game.saveState();
+            },
+
+            handleIncorrectAnswer() {
+                state.progress.lives--;
+                state.progress.combo = 0;
+                state.consecutiveErrors++;
+
+                const correctAnswer = Array.isArray(state.currentQuestion.a) ? state.currentQuestion.a[0] : state.currentQuestion.a;
+                
+                let feedbackHtml = `
+                    <div class="feedback-content feedback-incorrect">
+                        <h3>Yah, belum tepat...</h3>
+                        <p>Jawaban yang benar adalah: <strong>${correctAnswer}</strong></p>
+                        <p>Nyawa tersisa: ${'❤️'.repeat(state.progress.lives)}</p>
+                    </div>`;
+                dom.feedbackContainer.innerHTML = feedbackHtml;
+                
+                if (state.progress.lives <= 0) {
+                    alert("Waduh, nyawamu habis! Kamu harus mengulang level ini dari awal.");
+                    state.progress.xp = 0;
+                    state.progress.lives = 3;
+                }
+                
+                if (state.consecutiveErrors >= 2) {
+                    Game.giveHint(true); // Beri petunjuk gratis
+                }
+
+                if (state.inBossFight) {
+                    Game.endBossFight(false);
+                }
+                
+                Game.updateProgressUI();
+                Game.saveState();
+            },
+            
+            initiateBossFight() {
+                dom.questionArea.classList.add('hidden');
+                dom.bossFightArea.classList.remove('hidden');
+            },
+
+            startBossFight() {
+                state.inBossFight = true;
+                state.bossQuestionCount = 0;
+                dom.bossFightArea.classList.add('hidden');
+                dom.questionArea.classList.remove('hidden');
+                dom.challengeTitle.textContent = `👹 LAWAN MONSTER LEVEL ${state.progress.level} �`;
+                document.getElementById('boss-q-current').textContent = 1;
+                document.getElementById('boss-q-total').textContent = BOSS_FIGHT_QUESTIONS;
+                Game.nextQuestion();
+            },
+
+            endBossFight(isWin) {
+                state.inBossFight = false;
+                dom.challengeTitle.textContent = `Tantangan Level ${state.progress.level}`;
+                
+                if (isWin) {
+                    alert(`🎊 Selamat! Kamu berhasil mengalahkan Monster Soal Level ${state.progress.level}!`);
+                    state.progress.levelMastery[state.progress.level] = 3; // 3 bintang
+                    state.progress.level++;
+                    state.progress.xp = 0;
+                    state.progress.coins += 50; // Bonus
+                } else {
+                    alert(`Sayang sekali, kamu dikalahkan Monster. Coba lagi ya! XP-mu dikurangi sedikit.`);
+                    state.progress.xp = Math.floor(XP_PER_LEVEL * 0.8); // Reset XP ke 80%
+                    state.progress.lives = 3;
+                }
+                Game.renderAll();
+                setTimeout(Game.nextQuestion, 3000);
+                Game.saveState();
+            },
+            
+            giveHint(isFree = false) {
+                if (!isFree) {
+                    if (state.progress.coins < 5) {
+                        alert("Kristal 💎 tidak cukup!");
+                        return;
+                    }
+                    state.progress.coins -= 5;
+                    Game.updateProgressUI();
+                }
+
+                const q = state.currentQuestion;
+                let hint = "Coba pikirkan lagi...";
+                if (q.q.toLowerCase().includes('padat')) hint = "Benda padat itu keras dan bentuknya tidak berubah-ubah, seperti batu atau kayu.";
+                if (q.q.toLowerCase().includes('cair')) hint = "Benda cair bisa mengalir dan bentuknya mengikuti wadahnya, seperti air atau sirup.";
+                if (q.q.toLowerCase().includes('gas')) hint = "Benda gas tidak terlihat dan memenuhi seluruh ruangan, seperti udara.";
+                if (q.q.toLowerCase().includes('mencair')) hint = "Mencair itu perubahan dari padat ke cair, seperti es yang jadi air.";
+                if (q.q.toLowerCase().includes('membeku')) hint = "Membeku itu perubahan dari cair ke padat, seperti air yang jadi es.";
+                
+                alert(`💡 Petunjuk: ${hint}`);
+            },
+            
+            showFact() {
+                if (state.progress.coins < 8) {
+                    alert("Kristal 💎 tidak cukup!");
+                    return;
+                }
+                state.progress.coins -= 8;
+                Game.updateProgressUI();
+                alert("🔬 Fakta Keren: Air adalah satu-satunya zat di Bumi yang secara alami ada dalam tiga wujud: padat (es), cair (air), dan gas (uap air)!");
+            },
+
+            // --- FUNGSI RENDER ---
+            renderAll() {
+                Game.updateProgressUI();
+                Game.renderLevelList();
+            },
+            
+            updateProgressUI() {
+                dom.playerAvatar.textContent = state.profile.champion;
+                dom.playerLives.textContent = state.progress.lives;
+                dom.playerCoins.textContent = state.progress.coins;
+                dom.playerLevel.textContent = state.progress.level;
+                dom.playerXp.textContent = state.progress.xp;
+                dom.xpToNextLevel.textContent = XP_PER_LEVEL;
+                const xpPercentage = Math.min(100, (state.progress.xp / XP_PER_LEVEL) * 100);
+                dom.xpBar.style.width = `${xpPercentage}%`;
+            },
+            
+            renderLevelList() {
+                let html = '';
+                LEVELS.forEach(level => {
+                    const isCompleted = state.progress.levelMastery[level.id];
+                    const isActive = state.progress.level === level.id;
+                    let statusClass = '';
+                    if (isCompleted) statusClass = 'completed';
+                    if (isActive) statusClass = 'active';
+
+                    html += `
+                        <li class="level-item ${statusClass}">
+                            <span class="level-icon">${level.icon}</span>
+                            <span class="level-name">${level.name}</span>
+                            <span class="level-stars">${isCompleted ? '⭐'.repeat(isCompleted) : ''}</span>
+                        </li>
+                    `;
+                });
+                dom.levelList.innerHTML = html;
+            },
+            
+            renderQuestion() {
+                const q = state.currentQuestion;
+                dom.challengeTitle.textContent = `Tantangan Level ${state.progress.level}`;
+                
+                let qHtml = `<span class="question-emoji">${q.emoji}</span><p>${q.q}</p>`;
+                dom.questionDisplay.innerHTML = qHtml;
+
+                let answerHtml = '';
+                if (q.type === 'mc') {
+                    answerHtml = `<div class="answer-options">`;
+                    q.options.forEach(opt => {
+                        answerHtml += `<button type="button" class="btn">${opt}</button>`;
+                    });
+                    answerHtml += `</div>`;
+                } else if (q.type === 'fill') {
+                    answerHtml = `<input type="text" class="answer-input-short" placeholder="Ketik jawabanmu di sini">`;
+                }
+                dom.answerInputArea.innerHTML = answerHtml;
+
+                if(q.type === 'mc') {
+                    dom.answerInputArea.querySelectorAll('button').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            dom.answerInputArea.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+                            e.currentTarget.classList.add('selected');
+                        });
+                    });
+                }
+            },
+
+            // --- DATA & MODAL ---
+            saveState() {
+                localStorage.setItem('as_v1_profile', JSON.stringify(state.profile));
+                localStorage.setItem('as_v1_progress', JSON.stringify(state.progress));
+            },
+
+            loadState() {
+                const profile = localStorage.getItem('as_v1_profile');
+                const progress = localStorage.getItem('as_v1_progress');
+                if (profile) state.profile = JSON.parse(profile);
+                if (progress) state.progress = JSON.parse(progress);
+            },
+            
+            resetProgress() {
+                if (confirm("Apakah kamu yakin ingin menghapus semua progres? Ini tidak bisa dibatalkan!")) {
+                    localStorage.removeItem('as_v1_profile');
+                    localStorage.removeItem('as_v1_progress');
+                    window.location.reload();
+                }
+            },
+            
+            showHelp() {
+                const helpContent = document.getElementById('help-content');
+                helpContent.innerHTML = `
+                    <h3>Wujud Benda</h3>
+                    <p><strong>🧱 Padat:</strong> Bentuknya selalu tetap. Contoh: Batu, Meja, Pensil.</p>
+                    <p><strong>💧 Cair:</strong> Bentuknya mengikuti wadahnya. Contoh: Air, Sirup, Minyak.</p>
+                    <p><strong>💨 Gas:</strong> Tidak terlihat dan memenuhi ruangan. Contoh: Udara, Asap, Uap.</p>
+                    <hr>
+                    <h3>Perubahan Wujud</h3>
+                    <p><strong>Mencair:</strong> Padat menjadi Cair (Es ➡️ Air).</p>
+                    <p><strong>Membeku:</strong> Cair menjadi Padat (Air ➡️ Es).</p>
+                    <p><strong>Menguap:</strong> Cair menjadi Gas (Air ➡️ Uap).</p>
+                    <p><strong>Mengembun:</strong> Gas menjadi Cair (Uap ➡️ Air).</p>
+                `;
+                dom.helpModal.showModal();
+            },
+
+            showTeachersSheet() {
+                const recapData = { profile: state.profile, progress: state.progress };
+                document.getElementById('recap-json').textContent = JSON.stringify(recapData, null, 2);
+                document.getElementById('download-recap-btn').onclick = () => {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recapData));
+                    const downloadAnchorNode = document.createElement('a');
+                    downloadAnchorNode.setAttribute("href", dataStr);
+                    downloadAnchorNode.setAttribute("download", "rekap_arena_sains.json");
+                    document.body.appendChild(downloadAnchorNode);
+                    downloadAnchorNode.click();
+                    downloadAnchorNode.remove();
+                };
+                dom.teachersSheetModal.showModal();
+            }
+        };
+
+        // Inisialisasi game saat DOM sudah siap
+        document.addEventListener('DOMContentLoaded', Game.init);
+        
+    })();
+    </script>
+</body>
+</html>
+�
